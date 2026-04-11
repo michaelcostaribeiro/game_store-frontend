@@ -1,0 +1,21 @@
+@import "tailwindcss";
+
+@theme {
+    --color-primary: #191919;
+    --color-secondary: #c8c8c8;
+    --color-secondary-light: #dcdcdc;
+    --color-tertiary: #2e2e2e;
+    --color-tertiary-light: #525252;
+}
+@layer components {
+    .subtitle {
+        @apply text-xl font-semibold text-tertiary;
+    }
+}
+.hideScroll{
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+.hideScroll::-webkit-scrollbar{
+    display: none;
+}
