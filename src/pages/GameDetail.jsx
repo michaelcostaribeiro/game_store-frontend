@@ -8,17 +8,17 @@ import { useParams } from "react-router-dom"
 import DataField from '../components/DataField';
 import TagsField from '../components/TagsField';
 
+// API URL
+import { url } from '../shared'
+
 const GameDetail = () => {
     const [game, setGame] = useState()
     const { id } = useParams()
     useEffect(() => {
         const fetchData = async () => {
-            const response = await fetch(`http://127.0.0.1:8000/api/game/${id}/`);
+            const response = await fetch(`${url}api/game/${id}/`);
             const gameData = await response.json();
             setGame(gameData)
-
-
-            console.log(gameData)
 
         }
         fetchData()

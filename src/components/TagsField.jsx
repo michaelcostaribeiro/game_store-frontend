@@ -1,7 +1,6 @@
 import React from 'react'
 
 const TagsField = ({ tags }) => {
-    console.log(tags)
     return (
         <dl className=' p-3'>
             <dt className='subtitle'>Tags relacionadas</dt>

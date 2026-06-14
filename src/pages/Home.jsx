@@ -6,6 +6,8 @@ import bannerInformatica from '../assets/banner-informatica.jpg'
 import tecladoImage from '../assets/teclado.png'
 import Highlight from '../components/Highlight'
 
+import { url } from '../shared'
+
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faStar } from '@fortawesome/free-solid-svg-icons';
 
@@ -16,7 +18,7 @@ const Home = () => {
     const [retroDestaque, setRetroDestaque] = useState();
     const [pacoteSemanal, setPacoteSemanal] = useState();
     useEffect(() => {
-        fetch('http://localhost:8000/api/store/')
+        fetch(url + 'api/store/')
             .then((response) => response.json())
             .then((data) => {
                 setGames(data.games);
@@ -64,15 +66,16 @@ const Home = () => {
             })
     }, []);
 
+
     return (lancamentos &&
         maisVendidos &&
         pacoteSemanal ? <>
-        <section className='hero'>
-            <img src={crashImage} alt="" />
+        <section className='min-h-[65vh] w-full flex md:min-h-[50vh]'>
+            <img src={'https://crashynews.wordpress.com/wp-content/uploads/2016/12/crash-bandicoot-n-sane-trilogy-banner-us-03dec16.jpg'} alt="hero banner" className=' object-cover w-full' />
         </section>
 
 
-        <div className='w-screen bg-primary h-14'></div>
+        <div className='w-full bg-primary h-14'></div>
 
 
         <section className='lancamentos mt-5'>
@@ -92,21 +95,29 @@ const Home = () => {
 
 
 
-        <section className='pacote flex-col flex justify-center  h-screen text-white gap-2 
-            bg-position-[70%]
-            bg-no-repeat 
-            bg-cover' style={{
+        <section className='
+        pacote flex-col flex justify-center  h-screen text-white gap-2 bg-position-[70%] bg-no-repeat bg-cover
+        md:h-[65vh]
+        xl:h-[80vh]' style={{
                 backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url(${promotionImageSmall})`
             }}>
-            <div className='w-[calc(83.33%+0.5rem)] mx-auto tracking-wider text-md'>
+            <div className='
+            w-[calc(83.33%+0.5rem)] mx-auto tracking-wider text-md 
+            md:w-[70%] md:text-lg
+            xl:w-1/3'>
                 <h2>Pacote retrô da semana</h2>
                 <p className='tracking-widest uppercase'>Megaman Legacy Collection</p>
             </div>
-            <div>
+            <div className='
+            md:mx-auto md:w-[70%] 
+            xl:w-1/3'>
                 <img src="https://ssb.wiki.gallery/images/a/a0/Mega_Man.png" alt="Mega Man" className='hidden' />
-                <div className='flex flex-wrap justify-center gap-2'>
-                    {pacoteSemanal.map((item) => {
-                        return <div key={item.id} className='w-5/12 h-40'>
+                <div className='
+                flex flex-wrap justify-center gap-2  mx-auto px-5 
+                md:px-0
+                xl:gap-4'>
+                    {pacoteSemanal.map((item, index) => {
+                        return <div key={item.id} className='w-[48%] h-40'>
                             <img src={item.img_url} alt={item.title} className='h-full w-full rounded-lg' />
                         </div>
                     })}
@@ -114,41 +125,49 @@ const Home = () => {
                 </div>
 
             </div>
-            <div className='flex justify-between w-[calc(83.33%+0.5rem)] font-light tracking-widest uppercase text-sm mx-auto'>
+            <div className='
+            flex justify-between w-[calc(83.33%+0.5rem)] font-light tracking-widest uppercase text-sm mx-auto 
+            md:w-[70%] md:text-lg
+            xl:w-1/3'>
                 <p>Jogos da semana</p>
                 <p>R$ 19,90</p>
             </div>
         </section>
 
-        <section>
-                <h2 className='uppercase text-white font-bold text-xl h-20 mt-10 flex justify-center items-center mx-3 rounded-2xl text-shadow-lg ' style={{
+        <section className=''>
+            <h2 className='
+            uppercase text-white font-bold text-xl h-20 mt-10 flex justify-center items-center mx-3 rounded-2xl text-shadow-lg 
+            xl:mx-100' style={{
                     backgroundImage: `url(${bannerInformatica})`
                 }}>Conheça nossa informática</h2>
 
-                <div >
+            <div>
+                <div className='md:flex md:px-2 xl:px-100 xl:py-5'>
                     <div className='p-3'>
-                        <h3 className='text-lg my-3'>
+                        <h3 className='text-lg my-3 md:text-2xl xl:text-3xl'>
                             Somente os melhores
                         </h3>
-                        <p className='text-sm'>
+                        <p className='text-sm md:text-base '>
                             Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer sit amet pharetra nibh. Aenean venenatis felis ut tortor fermentum, ut tincidunt nisi commodo. Proin in metus at purus ornare ornare sed ut lacus. Fusce ut faucibus turpis. Praesent sollicitudin iaculis tincidunt. Nam metus turpis, tempor vitae tincidunt id.
                         </p>
                     </div>
-
-                    <div className='border-1 rounded-md flex flex-col justify-center items-center w-10/12 mx-auto my-5 '>
+                    <div className='border-1 rounded-md flex flex-col justify-center items-center w-10/12 mx-auto my-5
+                    md:min-w-[33%] 
+                    '>
                         <h2 className='text-xl uppercase tracking-[.5rem]'>Cougar</h2>
                         <img src={tecladoImage} alt="imagem de teclado" />
                         <div className='my-2'>
-                        {[...Array(5)].map((_, i) => {
-                            return <span key={i} className='text-yellow-500 text-xl'><FontAwesomeIcon icon={faStar} /></span>
-                        })}
+                            {[...Array(5)].map((_, i) => {
+                                return <span key={i} className='text-yellow-500 text-xl'><FontAwesomeIcon icon={faStar} /></span>
+                            })}
                         </div>
                     </div>
-                    <Highlight
+                </div>
+                <Highlight
                     title={null}
                     items={games}
-                    />
-                </div>
+                />
+            </div>
         </section>
     </> : ''
     )

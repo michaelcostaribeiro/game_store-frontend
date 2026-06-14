@@ -1,28 +1,48 @@
 // Icons
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faMagnifyingGlass, faUser, faCartArrowDown } from '@fortawesome/free-solid-svg-icons';
+import { faMagnifyingGlass, faUser, faCartArrowDown, faArrowRightFromBracket } from '@fortawesome/free-solid-svg-icons';
 
 // Router
-import { Link, Route, Routes } from 'react-router-dom';
+import { Link, Route, Routes, useNavigate, useSearchParams } from 'react-router-dom';
 import Login from './Login';
 import LoginButton from './LoginButton';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useContext } from 'react';
+
+// API URL
+import { url } from '../shared'
+import { LoginContext } from '../contexts/LoginContext';
 
 const Navbar = ({ storeTitle }) => {
-    const consoles = [
-        { id: 1, text: 'Nintendo' },
-        { id: 2, text: 'Playstation' },
-        { id: 3, text: 'Xbox' },
-    ]
     const [navHeight, setNavHeight] = useState(0);
     const [platforms, setPlatforms] = useState([]);
+    const [loggedIn, setLoggedIn] = useContext(LoginContext);
+
+    const [searchParams, setSearchParams] = useSearchParams();
+    const [searchString, setSearchString] = useState('');
+    const navigate = useNavigate('');
+
+
     const navRef = useRef(null);
+
+    function logout () {
+        localStorage.clear()
+        setLoggedIn(false)
+    }
+
+    function handleSubmit(e){
+        e.preventDefault()
+        if(searchString){
+            navigate(`/search?q=${encodeURIComponent(searchString)}`);
+            setSearchString('');
+        };
+
+    }
 
     useEffect(() => {
         if (navRef.current) {
             setNavHeight(navRef.current.offsetHeight);
         }
-        fetch('http://127.0.0.1:8000/api/icons')
+        fetch(url + 'api/icons')
         .then((response) => response.json())
         .then((data) => {
             setPlatforms(data.platforms)
@@ -30,18 +50,18 @@ const Navbar = ({ storeTitle }) => {
         
     }, []);
     return <>
-        <nav ref={navRef} className='bg-primary text-amber-50 container mx-xl m-auto py-3 fixed z-50'>
-            <div className='flex items-center justify-between px-3'>
+        <nav ref={navRef} className='bg-primary text-amber-50 container mx-xl m-auto py-3 fixed z-50 min-w-full xl:px-50'>
+            <div className='flex items-center justify-between px-3 gap-2 md:px-8 md:gap-4'>
                 <Link to='/'>{storeTitle}</Link>
-                <form className=' rounded-sm flex items-center text-amber-50 '>
-                    <input type="text" name="" id="" placeholder='Search' className='grow focus:outline-0' />
-                    <button type='submit'>
+                <form className='rounded-sm flex-1 flex items-center text-amber-50 ' onSubmit={handleSubmit}>
+                    <input type="text" name="" id="" placeholder='Search' className='grow focus:outline-0' value={searchString} onChange={(e)=>setSearchString(e.target.value)} />
+                    <button type='submit' className='pointer'>
                         <FontAwesomeIcon icon={faMagnifyingGlass} />
                     </button>
                 </form>
                 <div>
-                    <LoginButton />
-                    <Link href="#" className=' rounded-sm  ml-1'><FontAwesomeIcon icon={faCartArrowDown} /></Link>
+                    {loggedIn ? <button onClick={logout}><FontAwesomeIcon icon={faArrowRightFromBracket} /></button> : <LoginButton /> }
+                    <Link to={'/cart'} className=' rounded-sm  ml-1'><FontAwesomeIcon icon={faCartArrowDown} /></Link>
                 </div>
             </div>
             <div className='w-screen h-px -ml-[50vw] -mr-[50vw] bg-white my-2  relative left-1/2 right-1/2'></div>
