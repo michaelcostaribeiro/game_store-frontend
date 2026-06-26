@@ -5,11 +5,14 @@ import promotionImageSmall from '../assets/banner-promotion-small.jpg'
 import bannerInformatica from '../assets/banner-informatica.jpg'
 import tecladoImage from '../assets/teclado.png'
 import Highlight from '../components/Highlight'
+import LoadingScreen from '../components/LoadingScreen'
 
 import { url } from '../shared'
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faStar } from '@fortawesome/free-solid-svg-icons';
+import ErrorScreen from '../components/ErrorScreen';
+import { Link } from 'react-router-dom';
 
 const Home = () => {
     const [games, setGames] = useState();
@@ -17,60 +20,76 @@ const Home = () => {
     const [maisVendidos, setMaisVendidos] = useState();
     const [retroDestaque, setRetroDestaque] = useState();
     const [pacoteSemanal, setPacoteSemanal] = useState();
+
+    const [loading, setLoading] = useState(true);
+
+    const [error, setError] = useState('')
+
     useEffect(() => {
-        fetch(url + 'api/store/')
-            .then((response) => response.json())
-            .then((data) => {
-                setGames(data.games);
+        setLoading(true)
+        try {
+            fetch(url + 'api/store/')
+                .then((response) => response.json())
+                .then((data) => {
+                    setGames(data.games);
 
-                let sorted = [...data.games];
-                sorted.sort(function (a, b) {
-                    return new Date(b.release_date) - new Date(a.release_date);
-                });
-                sorted.splice(5)
-                setLancamentos(sorted)
-
-
-                sorted = [...data.games];
-                sorted.sort(function (a, b) {
-                    return b.quantity_sold - a.quantity_sold
-                });
-                sorted.splice(5)
-                setMaisVendidos(sorted)
+                    let sorted = [...data.games];
+                    sorted.sort(function (a, b) {
+                        return new Date(b.release_date) - new Date(a.release_date);
+                    });
+                    sorted.splice(5)
+                    setLancamentos(sorted)
 
 
+                    sorted = [...data.games];
+                    sorted.sort(function (a, b) {
+                        return b.quantity_sold - a.quantity_sold
+                    });
+                    sorted.splice(5)
+                    setMaisVendidos(sorted)
 
-                sorted = [...data.games]
-                let index_to_remove = []
-                sorted.forEach((value, index) => {
-                    let year = value.release_date.split('-')[0]
-                    if (year > 2000) {
-                        index_to_remove.unshift(index)
-                    }
-                });
-                index_to_remove.forEach((value) => {
-                    sorted.splice(value, 1);
-                });
-                sorted.sort(function (a, b) {
-                    return a.quantity_sold - b.quantity_sold
-                });
-                sorted.reverse();
-                setRetroDestaque(sorted);
 
-                sorted = [...data.games];
-                let name = 'Mega Man';
-                name = name.toLowerCase()
-                let filtered = sorted.filter(value => value.title.toLowerCase().includes(name));
-                setPacoteSemanal(filtered);
 
-            })
+                    sorted = [...data.games]
+                    let index_to_remove = []
+                    sorted.forEach((value, index) => {
+                        let year = value.release_date.split('-')[0]
+                        if (year > 2000) {
+                            index_to_remove.unshift(index)
+                        }
+                    });
+                    index_to_remove.forEach((value) => {
+                        sorted.splice(value, 1);
+                    });
+                    sorted.sort(function (a, b) {
+                        return a.quantity_sold - b.quantity_sold
+                    });
+                    sorted.reverse();
+                    setRetroDestaque(sorted);
+
+                    sorted = [...data.games];
+                    let name = 'Mega Man';
+                    name = name.toLowerCase()
+                    let filtered = sorted.filter(value => value.title.toLowerCase().includes(name));
+                    setPacoteSemanal(filtered);
+
+
+                })
+
+            setLoading(false)
+        }catch(e){
+            console.log(e.message)
+            setError(e.message)
+        }
     }, []);
 
+    if (loading) return <LoadingScreen />
+    if (error) return <ErrorScreen message={error} />
 
     return (lancamentos &&
         maisVendidos &&
         pacoteSemanal ? <>
-        <section className='min-h-[65vh] w-full flex md:min-h-[50vh]'>
+        <section className=' w-full flex min-h-[60vh] md:min-h-[50vh]'>
             <img src={'https://crashynews.wordpress.com/wp-content/uploads/2016/12/crash-bandicoot-n-sane-trilogy-banner-us-03dec16.jpg'} alt="hero banner" className=' object-cover w-full' />
         </section>
 
@@ -104,22 +123,22 @@ const Home = () => {
             <div className='
             w-[calc(83.33%+0.5rem)] mx-auto tracking-wider text-md 
             md:w-[70%] md:text-lg
-            xl:w-1/3'>
+            xl:w-1/4'>
                 <h2>Pacote retrô da semana</h2>
                 <p className='tracking-widest uppercase'>Megaman Legacy Collection</p>
             </div>
             <div className='
             md:mx-auto md:w-[70%] 
-            xl:w-1/3'>
+            xl:w-1/4'>
                 <img src="https://ssb.wiki.gallery/images/a/a0/Mega_Man.png" alt="Mega Man" className='hidden' />
                 <div className='
                 flex flex-wrap justify-center gap-2  mx-auto px-5 
                 md:px-0
                 xl:gap-4'>
                     {pacoteSemanal.map((item, index) => {
-                        return <div key={item.id} className='w-[48%] h-40'>
+                        return <Link to={`/game/${item.id}`} key={item.id} className='w-[48%] h-40'>
                             <img src={item.img_url} alt={item.title} className='h-full w-full rounded-lg' />
-                        </div>
+                        </Link>
                     })}
 
                 </div>
@@ -128,7 +147,7 @@ const Home = () => {
             <div className='
             flex justify-between w-[calc(83.33%+0.5rem)] font-light tracking-widest uppercase text-sm mx-auto 
             md:w-[70%] md:text-lg
-            xl:w-1/3'>
+            xl:w-1/4'>
                 <p>Jogos da semana</p>
                 <p>R$ 19,90</p>
             </div>
@@ -169,7 +188,7 @@ const Home = () => {
                 />
             </div>
         </section>
-    </> : ''
+    </> : <LoadingScreen />
     )
 }
 

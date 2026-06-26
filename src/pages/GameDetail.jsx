@@ -4,63 +4,107 @@ import { faCartArrowDown, faWrench, faCalendar, faGamepad } from '@fortawesome/f
 
 // React
 import { useEffect, useState } from "react"
-import { useParams } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
 import DataField from '../components/DataField';
 import TagsField from '../components/TagsField';
 
 // API URL
-import { url } from '../shared'
+import { authHeaders, url } from '../shared'
+import useFetch from '../hooks/useFetch';
+import LoadingScreen from '../components/LoadingScreen';
+import ErrorScreen from '../components/ErrorScreen';
 
 const GameDetail = () => {
-    const [game, setGame] = useState()
-    const { id } = useParams()
-    useEffect(() => {
-        const fetchData = async () => {
-            const response = await fetch(`${url}api/game/${id}/`);
-            const gameData = await response.json();
-            setGame(gameData)
+    const navigate = useNavigate('')
+
+    const { id } = useParams();
+
+
+    const gameEndpoint = `api/game/${id}/`
+
+    const addToCart = async (e) => {
+        e.preventDefault()
+
+        if (!localStorage.token) {
+            alert('Você precisa estar logado para adicionar itens ao carrinho.')
+        } else {
+
+            try {
+                const addToCartEndpoint = 'api/addItemToCart/'
+                console.log(authHeaders)
+
+                const response = await fetch(`${url + addToCartEndpoint}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    },
+                    body: JSON.stringify({
+                        'game_item_id': game.id,
+                        'quantity': 1
+                    })
+                })
+                if (response.ok) {
+                    const data = response.json();
+                } else if (response.status === 401) {
+                    alert('Tempo de login expirado! Redirecionando para a página inicial...')
+                    // localStorage.clear()
+                    // navigate('/')
+                }
+            }
+            catch (e) {
+                console.log(e)
+            }
 
         }
-        fetchData()
-    }, [id])
+    }
+
+
+    const {
+        data: game,
+        loading,
+        error
+    } = useFetch({ endpoint: gameEndpoint })
+
+    if (loading) return <LoadingScreen />
+    if (error) return <ErrorScreen message={error} />
+
     return (
-        <article className="my-3">
-            {game ?
-                <>
-                    <figure>
-                        <img src={game.img_url} className="mx-auto" alt="" />
-                    </figure>
-                    <div className="p-3 flex flex-col gap-2">
-                        <h1 className="text-2xl font-semibold text-primary">{game.title}</h1>
-                        <section>
-                            <h2 className="subtitle">Descrição:</h2>
-                            <p className='text-sm my-2'>{game.description}</p>
-                        </section>
-                        <data className="text-2xl font-semibold text-tertiary">R$ {game.price}</data>
-                        <button className='bg-tertiary text-white p-3 text-[1.25rem] font-semibold rounded-lg cursor-pointer'><FontAwesomeIcon icon={faCartArrowDown} aria-hidden='true' /><span className='ml-2'>Adicionar ao carrinho</span></button>
-                    </div>
+        <article className="">
+            <figure className='bg-secondary py-2'>
+                <img src={game.img_url} className="mx-auto max-h-[35vh] h-[35vh] object-contain
+                xl:max-h-[50vh] xl:h-[50vh] xl:object-cover" alt={game.title} />
+            </figure>
+            <div className='xl:px-50'>
+                <div className="p-3 flex flex-col gap-2">
+                    <h1 className="text-2xl font-semibold text-primary">{game.title}</h1>
+                    <section>
+                        <h2 className="subtitle">Descrição:</h2>
+                        <p className='text-sm my-2 md:text-base xl:text-lg'>{game.description}</p>
+                    </section>
+                    <data className="text-2xl font-semibold text-tertiary">R$ {game.price}</data>
+                    <button
+                        onClick={(e) => addToCart(e)}
+                        className='bg-tertiary text-white p-3 text-[1.25rem] font-semibold rounded-lg cursor-pointer'><FontAwesomeIcon icon={faCartArrowDown} aria-hidden='true' /><span className='ml-2'>Adicionar ao carrinho</span></button>
+                </div>
+                <TagsField tags={game.genres} />
+                <h2 className='subtitle p-3'>Sobre este produto</h2>
+                <dl className='border-y border-secondary divide-y divide-secondary'>
+                    <DataField
+                        dataIcon={faCalendar}
+                        dataTitle={'Data de lançamento'}
+                        dataContent={game.release_date} />
+                    <DataField
+                        dataIcon={faWrench}
+                        dataTitle={'Desenvolvedor'}
+                        dataContent={game.developer} />
+                    <DataField
+                        dataIcon={faGamepad}
+                        dataTitle={'Consoles'}
+                        dataContent={game.consoles} />
+                </dl>
+            </div>
 
-
-                    <TagsField tags={game.genres} />
-
-
-                    <h2 className='subtitle p-3'>Sobre este produto</h2>
-                    <dl className='border-y border-secondary divide-y divide-secondary'>
-                        <DataField
-                            dataIcon={faCalendar}
-                            dataTitle={'Data de lançamento'}
-                            dataContent={game.release_date} />
-                        <DataField
-                            dataIcon={faWrench}
-                            dataTitle={'Desenvolvedor'}
-                            dataContent={game.developer} />
-                        <DataField
-                            dataIcon={faGamepad}
-                            dataTitle={'Consoles'}
-                            dataContent={game.consoles} />
-                    </dl>
-                </>
-                : 'loading...'}
         </article>
     )
 }

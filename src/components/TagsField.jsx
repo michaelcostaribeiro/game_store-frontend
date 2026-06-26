@@ -2,7 +2,7 @@ import React from 'react'
 
 const TagsField = ({ tags }) => {
     return (
-        <dl className=' p-3'>
+        <dl className='p-3 '>
             <dt className='subtitle'>Tags relacionadas</dt>
             <div className='flex gap-2'>
             {tags.map((tag, i) => {

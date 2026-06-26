@@ -10,6 +10,9 @@ import GameDetail from './pages/GameDetail.jsx'
 import { url } from './shared.jsx'
 import Cart from './pages/Cart.jsx'
 import Search from './pages/Search.jsx'
+import Checkout from './pages/Checkout.jsx'
+import CheckoutResult from './pages/CheckoutResult.jsx'
+import NotFound from './pages/NotFound.jsx'
 
 function App() {
   const [storeTitle, setStoreTitle] = useState("Neo Gaming");
@@ -42,24 +45,31 @@ function App() {
   }, [])
 
   return (
-    <>
+    <div className='flex flex-col min-h-screen'>
       <LoginContext.Provider value={[loggedIn, setLoggedIn]}>
+        
 
         <header className=' bg-primary'>
           <Navbar storeTitle={storeTitle} />
         </header>
-        <main className=''>
+        <main className='mt-4 flex-1 flex flex-col'>
           <Routes>
             <Route path='/' element={<Home />} />
-            <Route path='/:platform' element={<PlatformPage />} />
+            <Route path='platform/:platform' element={<PlatformPage />} />
             <Route path='/game/:id' element={<GameDetail />} />
             <Route path='/cart' element={<Cart />} />
             <Route path='/search' element={<Search/>}/>
+            <Route path='/checkout' element={<Checkout/>}  />
+            <Route path='/sucesso' element={<CheckoutResult result={'sucesso'}/>}/>
+            <Route path='/falha' element={<CheckoutResult result={'falha'} />}/>
+            <Route path='/pendente' element={<CheckoutResult result={'pendente'} />}/>
+            <Route path='*' element={<NotFound/>}/>
+             
           </Routes>
         </main>
         <Footer />
       </LoginContext.Provider>
-    </>
+    </div>
   )
 }
 

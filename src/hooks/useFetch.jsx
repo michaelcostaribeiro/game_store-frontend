@@ -3,7 +3,7 @@ import { url } from "../shared";
 import { LoginContext } from "../contexts/LoginContext";
 import { useNavigate } from "react-router-dom";
 
-export default function useFetch({ endpoint, method = 'GET', auth = false }) {
+export default function useFetch({ endpoint, method = 'GET', auth = false, body=null }) {
 
     const [data, setData] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -27,7 +27,11 @@ export default function useFetch({ endpoint, method = 'GET', auth = false }) {
                     'Content-type': 'application/json'
                 }
 
-                const response = await fetch(url + endpoint, {
+                const response = body ? await fetch(url + endpoint, {
+                    method,
+                    headers,
+                    body: JSON.stringify(body)
+                }) :await fetch(url + endpoint, {
                     method,
                     headers,
                 })
@@ -37,7 +41,6 @@ export default function useFetch({ endpoint, method = 'GET', auth = false }) {
 
                 if (response.ok) {
                     const result = await response.json();
-                    console.log(result)
                     setData(result);
                     setError(null);
                 } else {
@@ -48,6 +51,8 @@ export default function useFetch({ endpoint, method = 'GET', auth = false }) {
                         navigate('/')
                     }else if(response.status === 404){
                         setError('Nada encontrado!')
+                    }else if(response.status === 500){
+                        setError('Ocorreu um erro interno.')
                     }
                 }
             } catch (e) {

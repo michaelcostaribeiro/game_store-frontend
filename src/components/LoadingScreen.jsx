@@ -2,7 +2,9 @@ import React from 'react'
 
 const LoadingScreen = () => {
   return (
-    <div className='loader min-h-[70vh] mx-auto'></div>
+    <div className='flex-grow flex flex-col justify-center items-center'>
+      <div className='loader'></div>
+    </div>
   )
 }
 

@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom"
 
-const Highlight = ({ title, items }) => {
+const Highlight = ({ title, items, device=false }) => {
   return (
     <div className='w-full overflow-hidden xl:px-50'>
 
@@ -17,10 +17,11 @@ const Highlight = ({ title, items }) => {
           md:min-w-5/12 md:max-h-60
           xl:min-w-3/15 xl:max-w-3/15
           '>
-            <Link to={`/game/${item.id}`}>
-              <img src={item.img_url} alt={item.title} className='rounded-xl h-40 w-full object-cover' />
+
+            <Link to={device ?`/device/${item.id}` :`/game/${item.id}`}>
+              <img src={item.img_url} alt={ device ? item.name:item.title} className='rounded-xl h-40 w-full object-cover' />
               <div className='flex justify-between my-2'>
-                <p className='font-semibold'>{item.title}</p>
+                <p className='font-semibold line-clamp-1'>{device ? item.name:item.title}</p>
                 <p className="min-w-max">R$ {item.price}</p>
               </div>
 

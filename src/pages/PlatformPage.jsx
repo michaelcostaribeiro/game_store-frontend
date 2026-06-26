@@ -1,68 +1,111 @@
 import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import Highlight from '../components/Highlight'
+import useFetch from '../hooks/useFetch'
+import LoadingScreen from '../components/LoadingScreen'
+import ErrorScreen from '../components/ErrorScreen'
+import { url } from '../shared'
 
 
 const PlatformPage = () => {
-    const [games, setGames] = useState()
-    const [platformName, setPlatformName] = useState()
-    const [consoles, setConsoles] = useState()
-    const [imageURL, setImageURL] = useState()
-    const {platform} = useParams();
-    useEffect(()=> {
-      const fetchData = async () => {
+  const [games, setGames] = useState()
+  const [platformName, setPlatformName] = useState()
+  const [consoles, setConsoles] = useState()
+  const [imageURL, setImageURL] = useState()
+  const [developers, setDevelopers] = useState(null)
 
-      
-        try{
+  const { platform } = useParams();
 
-          const [consolesRes, gamesRes, imageRes] = await Promise.all([
-            fetch('http://127.0.0.1:8000/api/consoles'),
-            fetch(`http://127.0.0.1:8000/api/games_by_platform/${platform}`),
-            fetch(`http://127.0.0.1:8000/api/hightlightImage/${platform}/`)
-          ]);
+  const consoleEndpoint = 'api/consoles'
+  const gamesByPlatformEndpoint = `api/games_by_platform/${platform}`
+  const imageEndpoint = `api/hightlightImage/${platform}/`
 
-          const consolesData = await consolesRes.json();
-          const gamesData = await gamesRes.json();
-          const imageData = await imageRes.json();
 
-          setGames(gamesData.games);
-          setImageURL(imageData.image);
-          const currentConsoleArray = consolesData.consoles.filter((consolePlatform)=> consolePlatform.platform.toLowerCase() == platform.toLowerCase())          
-          
-          setConsoles(currentConsoleArray);
-        }catch(error){
-          console.error("Erro ao carregar dados: ", error);
-        }
-      }
-      if(platform){
-        fetchData()
-        const capitalize = (value) => String(value).charAt(0).toUpperCase() + String(value).slice(1);
-        setPlatformName(capitalize(platform))
-      }
-    }, [platform])
+  const {
+    data: gamesData,
+    loading: gamesLoading,
+    error: gamesError
+  } = useFetch({ endpoint: gamesByPlatformEndpoint })
+
+  const {
+    data: consoleData,
+    loading: consoleLoading,
+    error: consoleError
+  } = useFetch({ endpoint: consoleEndpoint })
+
+  const {
+    data: imageData,
+    loading: imageLoading,
+    error: imageError
+  } = useFetch({ endpoint: imageEndpoint })
+
+
+  useEffect(() => {
+    if (!gamesData || !consoleData || !imageData) return;
+
+    if (platform.toLowerCase() === 'pc') {
+      const allDevelopers = []
+      gamesData.games.map((game) => {
+        allDevelopers.push(game.developer)
+      })
+      const uniqueDevelopers = [... new Set(allDevelopers)]
+      console.log(uniqueDevelopers)
+      setDevelopers(uniqueDevelopers)
+    }
+
+    setGames(gamesData.games);
+    setImageURL(imageData.image);
+    const currentConsoleArray = consoleData.consoles.filter((consolePlatform) => consolePlatform.platform.toLowerCase() == platform.toLowerCase())
+    setConsoles(currentConsoleArray);
+    const capitalize = (value) => String(value).charAt(0).toUpperCase() + String(value).slice(1);
+    setPlatformName(capitalize(platform))
+  }, [gamesData, consoleData, imageData])
+
+
+
+  if (gamesLoading || imageLoading || consoleLoading) return <LoadingScreen />
+
+  if (gamesError) return <ErrorScreen message={gamesError} />
+  if (imageError) return <ErrorScreen message={imageError} />
+  if (consoleError) return <ErrorScreen message={consoleError} />
+
   return (
     <>
-          {games && <div>
-        <div className={'h-70 flex justify-center items-center relative xl:h-120'} 
-        style={{ clipPath: 'polygon(0 0, 100% 0%, 100% 90%, 0 100%)'}}>
-          <img src={`${imageURL}`} alt=""  className='absolute h-full object-cover object-top brightness-50 w-full '/>
+      {games && <div>
+        <div className='h-70 flex justify-center items-center relative xl:h-120'
+          style={{ clipPath: 'polygon(0 0, 100% 0%, 100% 90%, 0 100%)' }}>
+          <img src={`${imageURL}`} alt="" className='absolute h-full object-cover object-top brightness-50 w-full ' />
           <h1 className='text-lg text-white relative font-bold'>Games for: {platformName}</h1>
-              
-              
-            </div>
-            {consoles.map((currentConsole)=>{
-              let gamesForCurrentConsole = games.filter((game)=>{
-                if(game.consoles.includes(currentConsole.console_name)){
-                  return game
-                }
-              })
-              return <Highlight
-                title={currentConsole.console_name}
-                items={gamesForCurrentConsole} 
-                key={currentConsole.id}/>
-            })}
-            
-            </div>}
+
+
+        </div>
+        {platform.toLowerCase() === 'pc' ?
+          developers.map((currentDeveloper) => {
+            const gamesByDeveloper = games.filter((game) => {
+              if (game.developer.includes(currentDeveloper)) {
+                return game
+              }
+            })
+            return <Highlight
+              title={currentDeveloper}
+              items={gamesByDeveloper}
+              key={currentDeveloper} />
+          })
+          :
+
+          consoles.map((currentConsole) => {
+            let gamesForCurrentConsole = games.filter((game) => {
+              if (game.consoles.includes(currentConsole.console_name)) {
+                return game
+              }
+            })
+            return <Highlight
+              title={currentConsole.console_name}
+              items={gamesForCurrentConsole}
+              key={currentConsole.id} />
+          })}
+
+      </div>}
     </>
   )
 }
