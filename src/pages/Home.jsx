@@ -13,6 +13,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faStar } from '@fortawesome/free-solid-svg-icons';
 import ErrorScreen from '../components/ErrorScreen';
 import { Link } from 'react-router-dom';
+import useFetch from '../hooks/useFetch';
 
 const Home = () => {
     const [games, setGames] = useState();
@@ -24,6 +25,16 @@ const Home = () => {
     const [loading, setLoading] = useState(true);
 
     const [error, setError] = useState('')
+
+    const highlightedGameID = 73
+
+    const {
+        data: highlightGameData,
+        loading: highlightGameLoading,
+        error: highlightGameError
+    } = useFetch({ endpoint: `api/game/${highlightedGameID}/` })
+
+    const [gamesByGenre, setGamesByGenre] = useState()
 
     useEffect(() => {
         setLoading(true)
@@ -73,17 +84,20 @@ const Home = () => {
                     let filtered = sorted.filter(value => value.title.toLowerCase().includes(name));
                     setPacoteSemanal(filtered);
 
-
+                    const filteredGames = data.games.filter((game) =>
+                        game.genres.includes('RPG') && game.platforms.includes('PC') && game.id != highlightedGameID)
+                    setGamesByGenre(filteredGames)
                 })
 
             setLoading(false)
-        }catch(e){
+        } catch (e) {
             console.log(e.message)
             setError(e.message)
         }
     }, []);
 
-    if (loading) return <LoadingScreen />
+    if (loading || highlightGameLoading) return <LoadingScreen />
+    if (highlightGameError) return <ErrorScreen message={highlightGameError} />
     if (error) return <ErrorScreen message={error} />
 
     return (lancamentos &&
@@ -158,35 +172,40 @@ const Home = () => {
             uppercase text-white font-bold text-xl h-20 mt-10 flex justify-center items-center mx-3 rounded-2xl text-shadow-lg 
             xl:mx-100' style={{
                     backgroundImage: `url(${bannerInformatica})`
-                }}>Conheça nossa informática</h2>
+                }}>Conheça nosso destaque para PC</h2>
 
-            <div>
+            <section>
                 <div className='md:flex md:px-2 xl:px-100 xl:py-5'>
                     <div className='p-3'>
                         <h3 className='text-lg my-3 md:text-2xl xl:text-3xl'>
-                            Somente os melhores
+                            {highlightGameData.title}
                         </h3>
                         <p className='text-sm md:text-base '>
-                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer sit amet pharetra nibh. Aenean venenatis felis ut tortor fermentum, ut tincidunt nisi commodo. Proin in metus at purus ornare ornare sed ut lacus. Fusce ut faucibus turpis. Praesent sollicitudin iaculis tincidunt. Nam metus turpis, tempor vitae tincidunt id.
+                            {highlightGameData.description}
                         </p>
                     </div>
-                    <div className='border-1 rounded-md flex flex-col justify-center items-center w-10/12 mx-auto my-5
-                    md:min-w-[33%] 
+                    <div className='border border-gray-500/80 rounded-md flex flex-col justify-center items-center w-10/12 mx-auto my-5
+                    md:min-w-[33%]  overflow-hidden
                     '>
-                        <h2 className='text-xl uppercase tracking-[.5rem]'>Cougar</h2>
-                        <img src={tecladoImage} alt="imagem de teclado" />
-                        <div className='my-2'>
+                        <div className='flex text-2xl font-light uppercase gap-2 my-2 items-center'>
+                            <h2>Premiado por :</h2>
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/The_Game_Awards_Logo_2024.svg/1920px-The_Game_Awards_Logo_2024.svg.png" className='max-h-10' alt="Ícone da logo 2024 do The Game Awards" />
+                        </div>
+                        <img src={highlightGameData.img_url} alt={highlightGameData.title} className='' />
+                        {/* <div className='my-2'>
                             {[...Array(5)].map((_, i) => {
                                 return <span key={i} className='text-yellow-500 text-xl'><FontAwesomeIcon icon={faStar} /></span>
                             })}
-                        </div>
+                        </div> */}
                     </div>
                 </div>
-                <Highlight
-                    title={null}
-                    items={games}
-                />
-            </div>
+                {gamesByGenre &&
+                    <Highlight
+                        title={'Jogos parecidos'}
+                        items={gamesByGenre}
+                    />
+                }
+            </section>
         </section>
     </> : <LoadingScreen />
     )

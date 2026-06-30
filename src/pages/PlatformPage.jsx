@@ -13,6 +13,7 @@ const PlatformPage = () => {
   const [consoles, setConsoles] = useState()
   const [imageURL, setImageURL] = useState()
   const [developers, setDevelopers] = useState(null)
+  const [developersLoading, setDevelopersLoading] = useState(true)
 
   const { platform } = useParams();
 
@@ -52,19 +53,19 @@ const PlatformPage = () => {
       console.log(uniqueDevelopers)
       setDevelopers(uniqueDevelopers)
     }
-
+    
     setGames(gamesData.games);
     setImageURL(imageData.image);
     const currentConsoleArray = consoleData.consoles.filter((consolePlatform) => consolePlatform.platform.toLowerCase() == platform.toLowerCase())
     setConsoles(currentConsoleArray);
     const capitalize = (value) => String(value).charAt(0).toUpperCase() + String(value).slice(1);
     setPlatformName(capitalize(platform))
+    setDevelopersLoading(false)
   }, [gamesData, consoleData, imageData])
 
 
 
-  if (gamesLoading || imageLoading || consoleLoading) return <LoadingScreen />
-
+  if (gamesLoading || imageLoading || consoleLoading || developersLoading ) return <LoadingScreen />
   if (gamesError) return <ErrorScreen message={gamesError} />
   if (imageError) return <ErrorScreen message={imageError} />
   if (consoleError) return <ErrorScreen message={consoleError} />

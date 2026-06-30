@@ -41,6 +41,7 @@ export default function useFetch({ endpoint, method = 'GET', auth = false, body=
 
                 if (response.ok) {
                     const result = await response.json();
+                    console.log(result)
                     setData(result);
                     setError(null);
                 } else {

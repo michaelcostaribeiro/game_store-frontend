@@ -9,20 +9,61 @@ import { faCartArrowDown } from '@fortawesome/free-solid-svg-icons';
 import LoadingScreen from '../components/LoadingScreen';
 import ErrorScreen from '../components/ErrorScreen';
 
+// Mercado Pago
+import axios from 'axios';
+import { initMercadoPago, Wallet } from '@mercadopago/sdk-react';
+
+
+initMercadoPago(import.meta.env.VITE_MERCADO_PAGO_PUBLIC_KEY);
+
+
 const Cart = () => {
     const navigate = useNavigate('')
+
 
     if (localStorage.length == 0) {
         navigate('/')
     }
 
+
+
     const {
         data: cartItems,
-        loading,
+        loading: cartLoading,
         error
     } = useFetch({ endpoint: 'getCart/', auth: true })
 
-    if (loading) return <LoadingScreen />
+    const [preferenceId, setPreferenceId] = useState(null);
+    const [loading, setLoading] = useState(false);
+
+    const iniciarPagamento = async () => {
+        setLoading(true);
+        try {
+            const formatedCartItems = cartItems.map((item) => {
+                return {
+                    id: item.game_item.id,
+                    title: item.game_item.title,
+                    quantity: item.quantity,
+                    price: item.game_item.price
+                }
+            })
+            const carrinho = {
+                items: formatedCartItems
+            }
+
+
+            const response = await axios.post(`${url}api/pagamentos/criar-preferencia/`, carrinho);
+
+            setPreferenceId(response.data.preference_id);
+        } catch (erro) {
+            console.error("Erro ao gerar a preferência de checkout:", erro);
+            alert("Não foi possível iniciar o pagamento. Tente novamente.");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    if (cartLoading) return <LoadingScreen />
     if (error) return <ErrorScreen />
 
     return <div className='min-h-[70vh] my-5 flex flex-col justify-center items-center gap-2 px-2 md:px-20 xl:px-100'>
@@ -45,7 +86,16 @@ const Cart = () => {
                     </div>
                 })}
 
-                <button className='text-xl px-5 py-2 bg-red-500 shadow-2xl border border-black/30 rounded-3xl mt-4'>Finalizar compra</button>
+                {!preferenceId && <button
+                    className='text-xl px-5 py-2 bg-red-500 shadow-2xl border border-black/30 rounded-3xl mt-4 cursor-pointer'
+                    onClick={iniciarPagamento}
+                    disabled={loading}>Finalizar compra</button>}
+                {preferenceId && <div>
+                    <Wallet
+                        initialization={{ preferenceId: preferenceId }}
+                        customization={{ texts: { valueProp: 'smart_option' } }}
+                    />
+                </div>}
             </div>
         </> : <>
             <div className='flex flex-col justify-center items-center'>
