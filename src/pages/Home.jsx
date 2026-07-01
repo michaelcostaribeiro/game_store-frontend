@@ -26,7 +26,7 @@ const Home = () => {
 
     const [error, setError] = useState('')
 
-    const highlightedGameID = 73
+    const highlightedGameID = import.meta.env.VITE_HIGHLIGHT_GAME_ID
 
     const {
         data: highlightGameData,
