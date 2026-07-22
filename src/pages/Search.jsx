@@ -30,7 +30,7 @@ const Search = () => {
         <div className='min-h-[70vh]  flex flex-col pb-2'>
             <h1 className='mx-auto text-2xl my-3 bg-secondary w-full text-center py-2'>Resultado da pesquisa:</h1>
             <div className='grid grid-cols-2 gap-2 px-2 md:grid-cols-3 xl:grid-cols-4 xl:px-50'>
-                {gamesResult && gamesResult.map((game) => {
+                {gamesResult && gamesResult.games.map((game) => {
                     return <Link to={`/game/${game.id}`} className='flex flex-col items-center bg-primary/70  rounded-xl h-45 shadow-lg' key={game.title}>
                         <h2 className='text-white px-2 line-clamp-1'>{game.title}</h2>
                         <img src={game.img_url} className='min-w-full max-h-[70%] h-[70%] md:max-h-[72.5%] md:h-[72.5%] flex-1 object-cover' alt={game.title} />
@@ -43,7 +43,7 @@ const Search = () => {
                 })}
             </div>
         </div>
-    ) : <ErrorScreen message={error} />
+    ) : <LoadingScreen/>
 }
 
 export default Search
