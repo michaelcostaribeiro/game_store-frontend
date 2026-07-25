@@ -21,6 +21,12 @@ const Footer = () => {
 
         <div className="py-3">
           <h2 className="font-semibold">Junte-se à nossa comunidade</h2>
+          <div className='flex gap-1 
+          *:h-7 *:w-7 md:*:h-8.5 md:*:w-8.5 *:bg-white *:p-1 md:*:p-1.25 *:rounded-full *:flex *:items-center *:justify-center'>
+            <a href='https://x.com/?lang=pt' target='_blank'><img src="https://raw.githubusercontent.com/ant-design/ant-design-icons/6c18c63fbcfcf71dae09cd6bd6d63a48f8b688f1/packages/icons-svg/svg/filled/x.svg" alt="X Icon" /></a>
+            <a href='https://bsky.app/' target='_blank'><img src="https://upload.wikimedia.org/wikipedia/commons/7/7a/Bluesky_Logo.svg" alt="Bluesky Icon" /></a>
+            <a href='https://www.linkedin.com/' target='_blank'><img src="https://upload.wikimedia.org/wikipedia/commons/8/81/LinkedIn_icon.svg" alt="Linkedin Icon" /></a>
+          </div>
         </div>
 
       </div>

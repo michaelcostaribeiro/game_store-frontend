@@ -26,34 +26,15 @@ const Login = ({ storeTitle, onClose }) => {
 
     const [loggedIn, setLoggedIn] = useContext(LoginContext);
 
-    // function setLogin() {
-    //     localStorage.setItem('token', data.access)
-    //     localStorage.setItem('refresh', data.refresh)
+    const [logInLoading, setLogInLoading] = useState(false)
+    const [registerLoading, setRegisterLoading] = useState(false)
 
-    //     if (!!localStorage.getItem('token')) {
-    //         setLoggedIn(true)
-    //     }
-    //     onClose()
-    // }
-
-    // async function login(e) {
-    //     e.preventDefault();
-
-    //     const tokenEndpoint = 'api/token/'
-
-    //     const {
-    //         data,
-    //         loading,
-    //         error
-    //     } = useFetch({ endpoint: tokenEndpoint, method: 'POST', auth: true, body: { username, password } })
-
-    //     error ? alert('something went wrong') : setLogin()
-    // }
 
 
 
     async function login(e) {
         e.preventDefault();
+        setLogInLoading(true)
         try {
             const response = await fetch(`${url}api/token/`, {
                 method: 'POST',
@@ -77,12 +58,16 @@ const Login = ({ storeTitle, onClose }) => {
             }
         } catch (e) {
             console.log(e)
+        } finally {
+            setLogInLoading(false)
         }
     }
 
     async function register(e) {
         e.preventDefault();
+
         if (password === confirmPassword) {
+            setRegisterLoading(true)
             try {
                 const response = await fetch(`${url}api/register/`, {
                     method: 'POST',
@@ -101,6 +86,8 @@ const Login = ({ storeTitle, onClose }) => {
                 }
             } catch (e) {
                 console.log(e)
+            } finally {
+                setRegisterLoading(false)
             }
         } else {
             setErrorMessage('As senhas não coincidem!')
@@ -151,8 +138,13 @@ const Login = ({ storeTitle, onClose }) => {
                                 id='confirmPassword'
                                 placeholder='Confirmar senha'
                                 value={confirmPassword} setValue={setConfirmPassword} />
-                            <SubmitField value='Entrar' />
+                            {registerLoading ?
+                                <div className='loader mx-auto' style={{ background: 'radial-gradient(circle closest-side, white 90%, #0000) 0 / calc(100% / 3) 100% space' }} />
+                                :
+                                <SubmitField value={'Registrar'} />
+                            }
                         </form>
+                        {errorMessage && <p className=" bg-red-500 p-2 rounded-2xl text-center">{errorMessage}</p>}
                         <div className="flex justify-end items-center">
                             <button className="btn p-2 bg-orange-500 rounded-lg cursor-pointer" onClick={() => setRegisterScreen(false)}>Ja tenho uma conta</button>
                         </div>
@@ -173,16 +165,27 @@ const Login = ({ storeTitle, onClose }) => {
                                     id='password'
                                     placeholder='*********'
                                     value={password} setValue={setPassword} />
-                                <SubmitField value='Entrar' />
+
+
+
+                                {logInLoading ?
+                                    <div className='loader mx-auto' style={{ background: 'radial-gradient(circle closest-side, white 90%, #0000) 0 / calc(100% / 3) 100% space' }} />
+                                    :
+                                    <SubmitField value='Entrar' />
+                                }
+
+
                             </form>
+                            {/* 
+                            {errorMessage && <p className=" bg-red-500 p-2 rounded-2xl text-center">{errorMessage}</p>} */}
                             <div className="flex justify-between items-center">
                                 <Link to={'/'}>Esqueci a senha</Link>
+
                                 <button className="btn p-2 bg-blue-800 rounded-lg cursor-pointer" onClick={() => setRegisterScreen(true)}>Registrar agora</button>
                             </div>
-                            <div className="w-full bg-secondary h-0.5"></div>
-                            <button className="cursor-pointer">Entrar com Google</button>
+                            {/* <div className="w-full bg-secondary h-0.5"></div>
+                            <button className="cursor-pointer">Entrar com Google</button> */}
                         </>}
-                    {errorMessage && <p className=" bg-red-500 p-2 rounded-2xl text-center">{errorMessage}</p>}
                 </div>
             </div>
         </div>
