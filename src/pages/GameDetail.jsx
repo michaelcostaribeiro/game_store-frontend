@@ -19,8 +19,10 @@ const GameDetail = () => {
 
     const { id } = useParams();
 
-
     const gameEndpoint = `api/game/${id}/`
+
+    const [APILoading, setAPILoading] = useState('')
+    const [APIError, setAPIError] = useState('')
 
     const addToCart = async (e) => {
         e.preventDefault()
@@ -30,8 +32,9 @@ const GameDetail = () => {
         } else {
 
             try {
-                const addToCartEndpoint = 'api/addItemToCart/'
-                console.log(authHeaders)
+                setAPILoading(true)
+                setAPIError('')
+                const addToCartEndpoint = 'api/cart/item/'
 
                 const response = await fetch(`${url + addToCartEndpoint}`, {
                     method: 'POST',
@@ -45,15 +48,21 @@ const GameDetail = () => {
                     })
                 })
                 if (response.ok) {
-                    const data = response.json();
+                    const data = await response.json();
+                    navigate('/cart')
                 } else if (response.status === 401) {
                     alert('Tempo de login expirado! Redirecionando para a página inicial...')
-                    // localStorage.clear()
-                    // navigate('/')
+                    localStorage.clear()
+                    navigate('/')
+                } else if (response.status === 403) {
+                    const data = await response.json();
+                    setAPIError(data.detail)
                 }
             }
             catch (e) {
                 console.log(e)
+            }finally{
+                setAPILoading(false)
             }
 
         }
@@ -75,7 +84,7 @@ const GameDetail = () => {
                 <img src={game.img_url} className="mx-auto max-h-[35vh] h-[35vh] object-contain
                 xl:max-h-[50vh] xl:h-[50vh] xl:object-cover" alt={game.title} />
             </figure>
-            <div className='xl:px-50'>
+            <div className='xl:px-100'>
                 <div className="p-3 flex flex-col gap-2">
                     <h1 className="text-2xl font-semibold text-primary">{game.title}</h1>
                     <section>
@@ -83,9 +92,10 @@ const GameDetail = () => {
                         <p className='text-sm my-2 md:text-base xl:text-lg'>{game.description}</p>
                     </section>
                     <data className="text-2xl font-semibold text-tertiary">R$ {game.price}</data>
-                    <button
+                    {APILoading ? <div className='loader mx-auto p-3'/> :<button
                         onClick={(e) => addToCart(e)}
-                        className='bg-tertiary text-white p-3 text-[1.25rem] font-semibold rounded-lg cursor-pointer'><FontAwesomeIcon icon={faCartArrowDown} aria-hidden='true' /><span className='ml-2'>Adicionar ao carrinho</span></button>
+                        className='bg-tertiary text-white p-3 text-[1.25rem] font-semibold rounded-lg cursor-pointer'><FontAwesomeIcon icon={faCartArrowDown} aria-hidden='true' /><span className='ml-2'>Adicionar ao carrinho</span></button>}
+                    {APIError && <div className='mx-auto text-lg'>{APIError}</div>}
                 </div>
                 <TagsField tags={game.genres} />
                 <h2 className='subtitle p-3'>Sobre este produto</h2>

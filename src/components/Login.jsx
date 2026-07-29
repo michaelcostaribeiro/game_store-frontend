@@ -176,15 +176,12 @@ const Login = ({ storeTitle, onClose }) => {
 
 
                             </form>
-                            {/* 
-                            {errorMessage && <p className=" bg-red-500 p-2 rounded-2xl text-center">{errorMessage}</p>} */}
+
                             <div className="flex justify-between items-center">
                                 <Link to={'/'}>Esqueci a senha</Link>
 
                                 <button className="btn p-2 bg-blue-800 rounded-lg cursor-pointer" onClick={() => setRegisterScreen(true)}>Registrar agora</button>
                             </div>
-                            {/* <div className="w-full bg-secondary h-0.5"></div>
-                            <button className="cursor-pointer">Entrar com Google</button> */}
                         </>}
                 </div>
             </div>

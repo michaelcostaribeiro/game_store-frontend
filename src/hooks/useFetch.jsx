@@ -66,7 +66,7 @@ export default function useFetch({ endpoint, method = 'GET', auth = false, body=
         fetchData()
     }, [endpoint, method, auth]);
 
-    return { data, loading, error };
+    return { data,setData, loading, error };
 
 
 
