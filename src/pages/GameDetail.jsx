@@ -4,7 +4,7 @@ import { faCartArrowDown, faWrench, faCalendar, faGamepad } from '@fortawesome/f
 
 // React
 import { useEffect, useState } from "react"
-import { useNavigate, useParams } from "react-router-dom"
+import { Link, useNavigate, useParams } from "react-router-dom"
 import DataField from '../components/DataField';
 import TagsField from '../components/TagsField';
 
@@ -23,6 +23,8 @@ const GameDetail = () => {
 
     const [APILoading, setAPILoading] = useState('')
     const [APIError, setAPIError] = useState('')
+
+    const [isAdmin, setIsAdmin] = useState(false)
 
     const addToCart = async (e) => {
         e.preventDefault()
@@ -61,12 +63,33 @@ const GameDetail = () => {
             }
             catch (e) {
                 console.log(e)
-            }finally{
+            } finally {
                 setAPILoading(false)
             }
 
         }
     }
+
+    useEffect(() => {
+        if (localStorage.token) {
+
+            async function checkAdmin() {
+                const isAdminEndpoint = 'api/isAdmin/'
+
+                const response = await fetch(url + isAdminEndpoint, {
+                    headers: {
+                        'Content-type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.token}`
+                    }
+                })
+                const data = await response.json();
+                setIsAdmin(data.is_admin)
+            }
+            checkAdmin()
+        } else {
+            setIsAdmin(false)
+        }
+    }, [])
 
 
     const {
@@ -86,13 +109,16 @@ const GameDetail = () => {
             </figure>
             <div className='xl:px-100'>
                 <div className="p-3 flex flex-col gap-2">
-                    <h1 className="text-2xl font-semibold text-primary">{game.title}</h1>
+                    <div className='flex justify-between items-center'>
+                        <h1 className="text-2xl font-semibold text-primary">{game.title}</h1>
+                        {isAdmin && <Link to={`/edit/${id}`} className='bg-blue-500 text-white p-2 rounded-lg font-semibold'>Editar</Link>}
+                    </div>
                     <section>
                         <h2 className="subtitle">Descrição:</h2>
                         <p className='text-sm my-2 md:text-base xl:text-lg'>{game.description}</p>
                     </section>
                     <data className="text-2xl font-semibold text-tertiary">R$ {game.price}</data>
-                    {APILoading ? <div className='loader mx-auto p-3'/> :<button
+                    {APILoading ? <div className='loader mx-auto p-3' /> : <button
                         onClick={(e) => addToCart(e)}
                         className='bg-tertiary text-white p-3 text-[1.25rem] font-semibold rounded-lg cursor-pointer'><FontAwesomeIcon icon={faCartArrowDown} aria-hidden='true' /><span className='ml-2'>Adicionar ao carrinho</span></button>}
                     {APIError && <div className='mx-auto text-lg'>{APIError}</div>}

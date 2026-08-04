@@ -13,6 +13,8 @@ import Search from './pages/Search.jsx'
 import Checkout from './pages/Checkout.jsx'
 import CheckoutResult from './pages/CheckoutResult.jsx'
 import NotFound from './pages/NotFound.jsx'
+import AddItem from './pages/AddItem.jsx'
+import EditGame from './pages/EditGame.jsx'
 
 function App() {
   const [storeTitle, setStoreTitle] = useState("Neo Gaming");
@@ -57,7 +59,9 @@ function App() {
             <Route path='/' element={<Home />} />
             <Route path='platform/:platform' element={<PlatformPage />} />
             <Route path='/game/:id' element={<GameDetail />} />
+            <Route path='/edit/:id' element={<EditGame />} />
             <Route path='/cart' element={<Cart />} />
+            <Route path='/addItem' element={<AddItem />} />
             <Route path='/search' element={<Search/>}/>
             <Route path='/checkout' element={<Checkout/>}  />
             <Route path='/sucesso' element={<CheckoutResult result={'sucesso'}/>}/>

@@ -30,11 +30,14 @@ const Login = ({ storeTitle, onClose }) => {
     const [registerLoading, setRegisterLoading] = useState(false)
 
 
-
-
-    async function login(e) {
+    async function login(e, admin_login=false) {
         e.preventDefault();
         setLogInLoading(true)
+
+        const currentUsername = admin_login ? 'admin' : username;
+        const currentPassword = admin_login ? 'admin' : password;
+
+
         try {
             const response = await fetch(`${url}api/token/`, {
                 method: 'POST',
@@ -42,8 +45,8 @@ const Login = ({ storeTitle, onClose }) => {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    username: username,
-                    password: password,
+                    username: currentUsername,
+                    password: currentPassword,
                 }),
             })
             const data = await response.json();
@@ -177,10 +180,13 @@ const Login = ({ storeTitle, onClose }) => {
 
                             </form>
 
-                            <div className="flex justify-between items-center">
+                            <div className="flex justify-between items-center xl:text-sm xl:text-center">
                                 <Link to={'/'}>Esqueci a senha</Link>
 
-                                <button className="btn p-2 bg-blue-800 rounded-lg cursor-pointer" onClick={() => setRegisterScreen(true)}>Registrar agora</button>
+                                <div className="flex">
+                                    <button className="btn p-2 mx-2 bg-green-700/80 rounded-lg cursor-pointer" onClick={(e) => login(e,true)}>Logar como admin</button>
+                                    <button className="btn p-2 bg-blue-800 rounded-lg cursor-pointer" onClick={() => setRegisterScreen(true)}>Registrar agora</button>
+                                </div>
                             </div>
                         </>}
                 </div>
