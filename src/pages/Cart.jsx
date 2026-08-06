@@ -112,7 +112,7 @@ const Cart = () => {
                 })}
 
                 {!preferenceId && <button
-                    className='text-xl px-5 py-2 bg-red-500 shadow-2xl border border-black/30 rounded-3xl mt-4 cursor-pointer'
+                    className='text-xl px-5 py-2 bg-green-500 text-white shadow-2xl border border-black/30 rounded-3xl mt-4 cursor-pointer transition hover:bg-green-600'
                     onClick={iniciarPagamento}
                     disabled={loading}>Finalizar compra</button>}
                 {preferenceId && <div>

@@ -31,29 +31,30 @@ const AddItem = () => {
 
     const [isAdmin, setIsAdmin] = useState(false)
 
+    async function checkAdmin() {
+        const isAdminEndpoint = 'api/isAdmin/'
+
+        const response = await fetch(url + isAdminEndpoint, {
+            headers: {
+                'Content-type': 'application/json',
+                'Authorization': `Bearer ${localStorage.token}`
+            }
+        })
+        const data = await response.json();
+        setIsAdmin(data.is_admin)
+        if (data.is_admin === false) {
+            navigate('/')
+        }
+    }
     useEffect(() => {
         if (localStorage.token) {
-            async function checkAdmin() {
-                const isAdminEndpoint = 'api/isAdmin/'
-
-                const response = await fetch(url + isAdminEndpoint, {
-                    headers: {
-                        'Content-type': 'application/json',
-                        'Authorization': `Bearer ${localStorage.token}`
-                    }
-                })
-                const data = await response.json();
-                setIsAdmin(data.is_admin)
-                if (data.is_admin === false) {
-                    navigate('/')
-                }
-            }
             checkAdmin()
         } else {
             setIsAdmin(false)
             navigate('/')
         }
     }, [])
+    
 
     async function handleForm(e) {
         e.preventDefault()
@@ -267,7 +268,8 @@ const AddItem = () => {
                         className='border rounded-sm w-full p-0.5' />
                 </div>
                 {formError && <div className='w-fit py-1 px-3 mx-auto bg-red-600/85 text-center text-lg text-white border border-black rounded-lg'>{formError}</div>}
-                <SubmitField value={'Adicionar jogo'} />
+                <input type="submit" value={`Adicionar jogo`}
+                    className="bg-white text-black font-semibold rounded-md px-3 py-1 transition focus:outline-0 hover:bg-black/30 hover:text-white text-2xl cursor-pointer w-fit disabled:opacity-50 disabled:cursor-not-allowed mx-auto" />
             </form>}
         </div>
 

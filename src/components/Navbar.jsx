@@ -54,7 +54,7 @@ const Navbar = ({ storeTitle }) => {
     }, []);
 
     useEffect(() => {
-        if (loggedIn) {
+        if (localStorage.token) {
             const checkAdmin = async () => {
                 const checkAdminEndpoint = 'api/isAdmin/'
                 const response = await fetch(url + checkAdminEndpoint, {

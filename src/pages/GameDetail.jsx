@@ -111,7 +111,7 @@ const GameDetail = () => {
                 <div className="p-3 flex flex-col gap-2">
                     <div className='flex justify-between items-center'>
                         <h1 className="text-2xl font-semibold text-primary">{game.title}</h1>
-                        {isAdmin && <Link to={`/edit/${id}`} className='bg-blue-500 text-white p-2 rounded-lg font-semibold'>Editar</Link>}
+                        {isAdmin && <Link to={`/edit/${id}`} className='bg-blue-500 text-white p-2 rounded-lg font-semibold transition hover:bg-blue-500/75'>Editar</Link>}
                     </div>
                     <section>
                         <h2 className="subtitle">Descrição:</h2>
@@ -120,7 +120,7 @@ const GameDetail = () => {
                     <data className="text-2xl font-semibold text-tertiary">R$ {game.price}</data>
                     {APILoading ? <div className='loader mx-auto p-3' /> : <button
                         onClick={(e) => addToCart(e)}
-                        className='bg-tertiary text-white p-3 text-[1.25rem] font-semibold rounded-lg cursor-pointer'><FontAwesomeIcon icon={faCartArrowDown} aria-hidden='true' /><span className='ml-2'>Adicionar ao carrinho</span></button>}
+                        className='bg-tertiary text-white p-3 text-[1.25rem] font-semibold rounded-lg cursor-pointer transition hover:bg-tertiary/75'><FontAwesomeIcon icon={faCartArrowDown} aria-hidden='true' /><span className='ml-2'>Adicionar ao carrinho</span></button>}
                     {APIError && <div className='mx-auto text-lg'>{APIError}</div>}
                 </div>
                 <TagsField tags={game.genres} />

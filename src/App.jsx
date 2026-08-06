@@ -21,29 +21,54 @@ function App() {
   const [loggedIn, setLoggedIn] = useState(!!localStorage.getItem('token'));
 
   async function fetchRefresh() {
-    const response = await fetch(`${url}api/token/refresh/`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        refresh: localStorage.getItem('refresh'),
-      }),
-    })
-    const data = await response.json();
-    localStorage.setItem('token', data.access)
-    localStorage.setItem('refresh', data.refresh)
+    const refreshToken = localStorage.getItem('refresh');
+    if (!refreshToken) {
+      setLoggedIn(false);
+      localStorage.clear()
+      return;
+    }
+
+    try {
+      const response = await fetch(`${url}api/token/refresh/`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          refresh: refreshToken,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Token expired or invalid');
+      }
+
+      const data = await response.json();
+      localStorage.setItem('token', data.access);
+
+      if (data.refresh) {
+        localStorage.setItem('refresh', data.refresh);
+      }
+
+      setLoggedIn(true);
+    } catch (error) {
+      localStorage.clear()
+      setLoggedIn(false);
+    }
   }
 
   useEffect(() => {
+    fetchRefresh();
     const second = 1000
     const minute = second * 60
-    setInterval(() => {
+    const interval = setInterval(() => {
       if (localStorage.getItem('refresh')) {
         fetchRefresh()
         setLoggedIn(true)
       }
     }, minute * 60)
+
+    return () => clearInterval(interval)
   }, [])
 
   return (

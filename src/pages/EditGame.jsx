@@ -29,7 +29,7 @@ const EditGame = () => {
     const [description, setDescription] = useState('')
     const [selectedGenres, setSelectedGenres] = useState([])
     const [developer, setDeveloper] = useState('')
-    const [date, setDate] = useState()
+    const [date, setDate] = useState('')
     const [selectedPlatforms, setSelectedPlatforms] = useState([])
     const [selectedConsoles, setSelectedConsoles] = useState([])
     const [coverURL, setCoverURL] = useState('')
@@ -41,29 +41,40 @@ const EditGame = () => {
 
     const [isAdmin, setIsAdmin] = useState(false)
 
+    async function checkAdmin() {
+        const isAdminEndpoint = 'api/isAdmin/'
+
+        const response = await fetch(url + isAdminEndpoint, {
+            headers: {
+                'Content-type': 'application/json',
+                'Authorization': `Bearer ${localStorage.token}`
+            }
+        })
+        const data = await response.json();
+        setIsAdmin(data.is_admin)
+        if (response.status === 401) {
+            localStorage.clear()
+            navigate('/')
+        }
+        if (data.is_admin === false) {
+            navigate('/')
+        }
+    }
     useEffect(() => {
         if (localStorage.token) {
-            async function checkAdmin() {
-                const isAdminEndpoint = 'api/isAdmin/'
-
-                const response = await fetch(url + isAdminEndpoint, {
-                    headers: {
-                        'Content-type': 'application/json',
-                        'Authorization': `Bearer ${localStorage.token}`
-                    }
-                })
-                const data = await response.json();
-                setIsAdmin(data.is_admin)
-                if (data.is_admin === false) {
-                    navigate('/')
-                }
-            }
             checkAdmin()
         } else {
             setIsAdmin(false)
             navigate('/')
         }
     }, [])
+    useEffect(() => {
+        if (!checkAdmin()) {
+            setIsAdmin(false)
+            localStorage.clear()
+            navigate('/')
+        }
+    }, [localStorage.token])
 
     useEffect(() => {
         if (gameData) {
@@ -79,6 +90,26 @@ const EditGame = () => {
             setSold(gameData.quantity_sold)
         }
     }, [gameData])
+
+    async function handleDeleteGame(e) {
+        e.preventDefault();
+
+        const deleteGameEndpoint = `api/game/${id}/`
+        const userConfirmed = window.confirm('Tem certeza que deseja excluir este jogo?')
+        if(userConfirmed){
+            const response = await fetch(url + deleteGameEndpoint, {
+                method:'DELETE',
+                headers:{
+                    'Content-type':'application/json',
+                    'Authorization': `Bearer ${localStorage.token}`
+                }
+            })
+            if (response.status === 204){
+                alert('Game deletado com sucesso, retornando a página inicial.')
+                navigate('/')
+            }
+        }
+    }
 
     async function handleForm(e) {
         e.preventDefault()
@@ -113,7 +144,7 @@ const EditGame = () => {
         const data = await response.json();
         if (response.status === 200) {
             navigate(`/game/${data.id}`)
-        }else if(response.status === 401 ){
+        } else if (response.status === 401) {
             localStorage.clear()
             alert('Usuário inválido, redirecionando pra página principal.')
             navigate('/')
@@ -295,7 +326,13 @@ const EditGame = () => {
                         className='border rounded-sm w-full p-0.5' />
                 </div>
                 {formError && <div className='w-fit py-1 px-3 mx-auto bg-red-600/85 text-center text-lg text-white border border-black rounded-lg'>{formError}</div>}
-                {formLoading ?<div className='mx-auto mt-1 loader'/>:<SubmitField value={`Editar ${gameData.title}`} />}
+                {formLoading ?
+                    <div className='mx-auto mt-1 loader' /> :
+                    <div className='flex justify-around'>
+                        <input type="submit" value={`Editar`}
+                            className="bg-white text-black font-semibold rounded-md px-5 py-1 transition focus:outline-0 hover:bg-black/30 hover:text-white text-2xl cursor-pointer w-fit disabled:opacity-50 disabled:cursor-not-allowed" />
+                        <button onClick={handleDeleteGame} className='text-2xl bg-red-500 w-fit px-5 py-1 text-white rounded-lg cursor-pointer font-semibold transition hover:bg-red-600'>Deletar</button>
+                    </div>}
 
             </form>}
         </div>
