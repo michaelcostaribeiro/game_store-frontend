@@ -34,8 +34,8 @@ const Login = ({ storeTitle, onClose }) => {
         e.preventDefault();
         setLogInLoading(true)
 
-        const currentUsername = admin_login ? 'admin' : username;
-        const currentPassword = admin_login ? 'admin' : password;
+        const currentUsername = admin_login ? import.meta.env.VITE_ADMIN_LOGIN : username;
+        const currentPassword = admin_login ? import.meta.env.VITE_ADMIN_PASSWORD : password;
 
 
         try {
