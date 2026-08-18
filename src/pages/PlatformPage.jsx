@@ -76,11 +76,11 @@ const PlatformPage = () => {
         <div className='h-70 flex justify-center items-center relative xl:h-120'
           style={{ clipPath: 'polygon(0 0, 100% 0%, 100% 90%, 0 100%)' }}>
           <img src={`${imageURL}`} alt="" className='absolute h-full object-cover object-top brightness-50 w-full ' />
-          <h1 className='text-lg text-white relative font-bold'>Games for: {platformName}</h1>
+          <h1 className='text-white relative font-bold text-shadow-[0_0_35px_rgb(0_0_0_)] text-4xl xl:text-5xl'>{platformName}</h1>
 
 
         </div>
-        {platform.toLowerCase() === 'pc' ?
+        {developers && platform.toLowerCase() === 'pc' ?
           developers.map((currentDeveloper) => {
             const gamesByDeveloper = games.filter((game) => {
               if (game.developer.includes(currentDeveloper)) {
