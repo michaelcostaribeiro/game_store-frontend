@@ -96,15 +96,15 @@ const EditGame = () => {
 
         const deleteGameEndpoint = `api/game/${id}/`
         const userConfirmed = window.confirm('Tem certeza que deseja excluir este jogo?')
-        if(userConfirmed){
+        if (userConfirmed) {
             const response = await fetch(url + deleteGameEndpoint, {
-                method:'DELETE',
-                headers:{
-                    'Content-type':'application/json',
+                method: 'DELETE',
+                headers: {
+                    'Content-type': 'application/json',
                     'Authorization': `Bearer ${localStorage.token}`
                 }
             })
-            if (response.status === 204){
+            if (response.status === 204) {
                 alert('Game deletado com sucesso, retornando a página inicial.')
                 navigate('/')
             }
@@ -199,18 +199,20 @@ const EditGame = () => {
                 {/* Gêneros */}
                 <fieldset>
                     <legend>Gêneros</legend>
-                    {gameModelsData && gameModelsData.genres.map((genre) => {
-                        return <div className='flex gap-1' key={genre}>
-                            <input
-                                type="checkbox"
-                                id={genre}
-                                name='genres'
-                                value={genre}
-                                onChange={(e) => handleCheckboxChange(e, selectedGenres, setSelectedGenres)}
-                                checked={selectedGenres.includes(genre)} />
-                            <label htmlFor={genre}>{genre}</label>
-                        </div>
-                    })}
+                    <div className='flex flex-wrap gap-1'>
+                        {gameModelsData && gameModelsData.genres.map((genre) => {
+                            return <div className='flex gap-1 bg-black/20 p-1 rounded-lg' key={genre}>
+                                <input
+                                    type="checkbox"
+                                    id={genre}
+                                    name='genres'
+                                    value={genre}
+                                    onChange={(e) => handleCheckboxChange(e, selectedGenres, setSelectedGenres)}
+                                    checked={selectedGenres.includes(genre)} />
+                                <label htmlFor={genre}>{genre}</label>
+                            </div>
+                        })}
+                    </div>
                 </fieldset>
 
 
@@ -246,19 +248,21 @@ const EditGame = () => {
                 {/* Plataformas */}
                 <fieldset>
                     <legend>Plataformas</legend>
-                    {gameModelsData && gameModelsData.platforms.map((platform) => {
-                        return <div className='flex gap-1' key={platform}>
-                            <input
-                                type="checkbox"
-                                id={platform}
-                                name='platforms'
-                                value={platform}
-                                onChange={(e) => handleCheckboxChange(e, selectedPlatforms, setSelectedPlatforms)}
-                                checked={selectedPlatforms.includes(platform)}
-                            />
-                            <label htmlFor={platform}>{platform}</label>
-                        </div>
-                    })}
+                    <div className='flex flex-wrap gap-1'>
+                        {gameModelsData && gameModelsData.platforms.map((platform) => {
+                            return <div className='flex gap-1 bg-black/20 p-1 rounded-lg' key={platform}>
+                                <input
+                                    type="checkbox"
+                                    id={platform}
+                                    name='platforms'
+                                    value={platform}
+                                    onChange={(e) => handleCheckboxChange(e, selectedPlatforms, setSelectedPlatforms)}
+                                    checked={selectedPlatforms.includes(platform)}
+                                />
+                                <label htmlFor={platform}>{platform}</label>
+                            </div>
+                        })}
+                    </div>
                 </fieldset>
 
 
@@ -266,19 +270,21 @@ const EditGame = () => {
                 {/* Consoles */}
                 <fieldset>
                     <legend>Consoles</legend>
-                    {gameModelsData && gameModelsData.consoles.map((console) => {
-                        return <div className='flex gap-1' key={console}>
-                            <input
-                                type="checkbox"
-                                id={console}
-                                name='consoles'
-                                value={console}
-                                onChange={(e) => handleCheckboxChange(e, selectedConsoles, setSelectedConsoles)}
-                                checked={selectedConsoles.includes(console)}
-                            />
-                            <label htmlFor={console}>{console}</label>
-                        </div>
-                    })}
+                    <div className='flex flex-wrap gap-1'>
+                        {gameModelsData && gameModelsData.consoles.map((console) => {
+                            return <div className='flex gap-1 bg-black/20 p-1 rounded-lg' key={console}>
+                                <input
+                                    type="checkbox"
+                                    id={console}
+                                    name='consoles'
+                                    value={console}
+                                    onChange={(e) => handleCheckboxChange(e, selectedConsoles, setSelectedConsoles)}
+                                    checked={selectedConsoles.includes(console)}
+                                />
+                                <label htmlFor={console}>{console}</label>
+                            </div>
+                        })}
+                    </div>
                 </fieldset>
 
 
